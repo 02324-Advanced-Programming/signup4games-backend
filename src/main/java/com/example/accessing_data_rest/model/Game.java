@@ -20,6 +20,8 @@ public class Game {
 
     private String state;
 
+    @ManyToOne
+    @JoinColumn(name = "creator_id", nullable = false)
     private User creator; // the user who created the game
 
     private boolean isOpen; // is the game open to join, only if state is "open" and max players is not reached
