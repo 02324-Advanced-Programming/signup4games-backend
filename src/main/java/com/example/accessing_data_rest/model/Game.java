@@ -18,6 +18,12 @@ public class Game {
 
     private int maxPlayers;
 
+    private String state;
+
+    private User creator; // the user who created the game
+
+    private boolean isOpen; // is the game open to join, only if state is "open" and max players is not reached
+
     // TODO There could be more attributes here, kie
     //      in which state is the sign up for the game, did
     //      the game started or finish (after the game started
@@ -68,4 +74,30 @@ public class Game {
         this.players = players;
     }
 
+    public String getState() {
+        return state;
+    }
+    public void setState(String state) {
+        this.state = state;
+    }
+    // state could be "open", "active", "finished"
+    // "open" means that players can join the game
+    // "active" means that the game is currently being played and players can't join
+    // "finished" means that the game has ended and players can't join
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean open) {
+        isOpen = open;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
 }
