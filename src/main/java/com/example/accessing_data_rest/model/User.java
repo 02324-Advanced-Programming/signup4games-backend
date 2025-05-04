@@ -1,14 +1,12 @@
 package com.example.accessing_data_rest.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
-@Table(name="user_table") // this is important! "user" is a keyword in H2 and not an identifier
+@Table(name = "user_table") // this is important! "user" is a keyword in H2 and not an identifier
 public class User {
 
     @Id
@@ -18,13 +16,21 @@ public class User {
 
     private String name;
 
+    private boolean online = false;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     // @JsonManagedReference("owner-games")  // ← managed on the List<Game>
     @JsonIgnore
     private List<Game> games;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Player> players;
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
 
     public List<Player> getPlayers() {
         return players;

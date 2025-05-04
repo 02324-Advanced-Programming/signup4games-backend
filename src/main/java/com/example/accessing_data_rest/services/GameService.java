@@ -1,20 +1,27 @@
 package com.example.accessing_data_rest.services;
 
 import com.example.accessing_data_rest.model.Game;
+import com.example.accessing_data_rest.model.GameState;
 import com.example.accessing_data_rest.model.Player;
 import com.example.accessing_data_rest.model.User;
-import com.example.accessing_data_rest.model.GameState;
 import com.example.accessing_data_rest.repositories.GameRepository;
 import com.example.accessing_data_rest.repositories.PlayerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.example.accessing_data_rest.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class GameService {
-    @Autowired private GameRepository gameRepository;
-    @Autowired private PlayerRepository playerRepository;
+    @Autowired
+    private GameRepository gameRepository;
+    @Autowired
+    private PlayerRepository playerRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public List<Game> getGames() {
         return (List<Game>) gameRepository.findAll();
@@ -59,5 +66,41 @@ public class GameService {
             throw new RuntimeException("Only creator can delete the game");
         }
         gameRepository.delete(game);
+    }
+
+    @Transactional
+    public Player joinGame(long gameId, long userId, String name) throws ChangeSetPersister.NotFoundException {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+        if (game.getState() != GameState.SIGNUP) {
+            throw new IllegalStateException("Cannot join a non-open game");
+        }
+        if (game.getPlayers().size() >= game.getMaxPlayers()) {
+            throw new IllegalStateException("Game is full");
+        }
+        boolean alreadyIn = game.getPlayers().stream()
+                .anyMatch(p -> p.getUser().getUid() == userId);
+        if (alreadyIn) {
+            throw new IllegalStateException("Already joined");
+        }
+        Player p = new Player();
+        p.setGame(game);
+        p.setName(name);
+        User user = userRepository.findByUid(userId);
+        if (user == null) {
+            throw new IllegalStateException("User not found");
+        }
+        p.setUser(user);
+        return playerRepository.save(p);
+    }
+
+    @Transactional
+    public void leaveGame(long gameId, long userId) {
+        var users = playerRepository.findByGame_UidAndUser_Uid(gameId, userId);
+        if (users == null || users.isEmpty()) {
+            throw new IllegalStateException("Player not found in game");
+        }
+        Player player = users.get(0);
+        playerRepository.delete(player);
     }
 }

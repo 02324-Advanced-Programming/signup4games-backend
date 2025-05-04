@@ -1,6 +1,5 @@
 package com.example.accessing_data_rest.model;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -8,7 +7,7 @@ import java.util.List;
 @Entity
 public class Game {
     @Id
-    @Column(name="game_id")
+    @Column(name = "game_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long uid;
 
@@ -35,6 +34,10 @@ public class Game {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
     public long getUid() {
@@ -69,13 +72,10 @@ public class Game {
         this.maxPlayers = maxPlayers;
     }
 
-    public void setPlayers(List<Player> players) {
-        this.players = players;
-    }
-
     public GameState getState() {
         return state;
     }
+
     public void setState(GameState state) {
         this.state = state;
     }

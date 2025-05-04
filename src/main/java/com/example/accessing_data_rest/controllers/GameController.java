@@ -1,16 +1,21 @@
 package com.example.accessing_data_rest.controllers;
 
 import com.example.accessing_data_rest.model.Game;
+import com.example.accessing_data_rest.model.Player;
+import com.example.accessing_data_rest.model.User;
 import com.example.accessing_data_rest.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/roborally/games")
 public class GameController {
-    @Autowired private GameService gameService;
+    @Autowired
+    private GameService gameService;
 
     @GetMapping("")
     public List<Game> getGames() {
@@ -29,7 +34,7 @@ public class GameController {
         return gameService.createGame(game);
     }
 
-    @PostMapping("/{gameId}/start")
+    @PutMapping("/{gameId}/start")
     public void startGame(@PathVariable Long gameId, @RequestParam Long userId) {
         gameService.startGame(gameId, userId);
     }
@@ -37,5 +42,30 @@ public class GameController {
     @DeleteMapping("/{gameId}")
     public void deleteGame(@PathVariable Long gameId, @RequestParam Long userId) {
         gameService.deleteGame(gameId, userId);
+    }
+
+    /**
+     * Join the given game as the current user.
+     * Returns the created Player record.
+     */
+    @PostMapping("/{gameId}/join")
+    public Player joinGame(
+            @PathVariable long gameId,
+            @RequestParam long userId,   // or, better, infer from security context
+            @RequestParam String name
+    ) throws ChangeSetPersister.NotFoundException {
+        return gameService.joinGame(gameId, userId, name);
+    }
+
+    /**
+     * Leave the given game for the current user.
+     * Idempotent: if you’re not in the game, it’s a no-op.
+     */
+    @DeleteMapping("/{gameId}/leave")
+    public void leaveGame(
+            @PathVariable long gameId,
+            @RequestBody User userPayload
+    ) {
+        gameService.leaveGame(gameId, userPayload.getUid());
     }
 }

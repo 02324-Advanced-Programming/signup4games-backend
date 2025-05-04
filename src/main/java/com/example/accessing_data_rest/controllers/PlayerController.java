@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/roborally/players")
 public class PlayerController {
-    @Autowired private PlayerService playerService;
+    @Autowired
+    private PlayerService playerService;
 
     @PostMapping(path = "",
             consumes = MediaType.APPLICATION_JSON_VALUE,

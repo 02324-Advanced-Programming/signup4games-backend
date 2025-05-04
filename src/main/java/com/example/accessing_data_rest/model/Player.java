@@ -1,6 +1,5 @@
 package com.example.accessing_data_rest.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -12,7 +11,7 @@ public class Player {
     //       user_id, but this is a bit tricky to start with. So this will
     //       Not be done in the context of course 02324!
     @Id
-    @Column(name="player_id")
+    @Column(name = "player_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long uid;
 
@@ -53,6 +52,7 @@ public class Player {
     public void setGame(Game game) {
         this.game = game;
     }
+
     public User getUser() {
         return user;
     }

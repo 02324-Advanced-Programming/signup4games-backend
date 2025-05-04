@@ -1,22 +1,26 @@
 package com.example.accessing_data_rest.services;
 
-import com.example.accessing_data_rest.model.Player;
 import com.example.accessing_data_rest.model.Game;
-import com.example.accessing_data_rest.model.User;
 import com.example.accessing_data_rest.model.GameState;
+import com.example.accessing_data_rest.model.Player;
+import com.example.accessing_data_rest.model.User;
 import com.example.accessing_data_rest.repositories.GameRepository;
 import com.example.accessing_data_rest.repositories.PlayerRepository;
 import com.example.accessing_data_rest.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
+
 import java.util.List;
 
 @Service
 public class PlayerService {
-    @Autowired private PlayerRepository playerRepository;
-    @Autowired private GameRepository gameRepository;
-    @Autowired private UserRepository userRepository;
+    @Autowired
+    private PlayerRepository playerRepository;
+    @Autowired
+    private GameRepository gameRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional
     public Player createPlayer(Player player) {
