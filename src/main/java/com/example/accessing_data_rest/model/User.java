@@ -1,5 +1,8 @@
 package com.example.accessing_data_rest.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -15,21 +18,20 @@ public class User {
 
     private String name;
 
-    // TODO this class needs to be extended with references to Player and
-    //      the other way round (similar to the reference from Game to Player
-    //      and the other way round.
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    // @JsonManagedReference("owner-games")  // ← managed on the List<Game>
+    @JsonIgnore
+    private List<Game> games;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Player> players;
 
-    @OneToOne
-    @JoinColumn(name = "player_id")
-    private Player player;
-
-    public Player getPlayer() {
-        return player;
+    public List<Player> getPlayers() {
+        return players;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
     public long getUid() {

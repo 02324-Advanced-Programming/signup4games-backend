@@ -1,12 +1,12 @@
 package com.example.accessing_data_rest.model;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
 public class Game {
-
     @Id
     @Column(name="game_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,22 +18,24 @@ public class Game {
 
     private int maxPlayers;
 
-    private String state;
-
     @ManyToOne
-    @JoinColumn(name = "creator_id", nullable = false)
-    private User creator; // the user who created the game
+    @JoinColumn(name = "owner_id")
+    // @JsonBackReference("owner-games")    // ← back on the singular owner
+    private User owner;
+
 
     private boolean isOpen; // is the game open to join, only if state is "open" and max players is not reached
 
-    // TODO There could be more attributes here, kie
-    //      in which state is the sign up for the game, did
-    //      the game started or finish (after the game started
-    //      you might not want new players coming in etc.)
-    //      See analogous classes in client.
-
-    @OneToMany(mappedBy="game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    // @JsonManagedReference              // << add this import + annotation
     private List<Player> players;
+
+    @Enumerated(EnumType.STRING)
+    private GameState state;
+
+    public List<Player> getPlayers() {
+        return players;
+    }
 
     public long getUid() {
         return uid;
@@ -43,17 +45,12 @@ public class Game {
         this.uid = uid;
     }
 
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Player> getPlayers() {
-        return players;
     }
 
     public int getMinPlayers() {
@@ -76,10 +73,10 @@ public class Game {
         this.players = players;
     }
 
-    public String getState() {
+    public GameState getState() {
         return state;
     }
-    public void setState(String state) {
+    public void setState(GameState state) {
         this.state = state;
     }
     // state could be "open", "active", "finished"
@@ -96,10 +93,10 @@ public class Game {
     }
 
     public User getCreator() {
-        return creator;
+        return owner;
     }
 
     public void setCreator(User creator) {
-        this.creator = creator;
+        this.owner = creator;
     }
 }

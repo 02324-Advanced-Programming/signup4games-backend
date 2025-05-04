@@ -1,5 +1,7 @@
 package com.example.accessing_data_rest.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 
@@ -18,9 +20,12 @@ public class Player {
 
     @ManyToOne
     @JoinColumn(name = "game_id")
+    // @JsonBackReference("game-players")
+    @JsonIgnore
     private Game game;
 
-    @OneToOne(mappedBy = "player")
+    @ManyToOne
+    @JsonIgnore     // don’t serialize back‐pointer to User
     private User user;
 
     // ...
