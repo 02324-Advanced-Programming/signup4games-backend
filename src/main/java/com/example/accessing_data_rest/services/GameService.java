@@ -34,6 +34,7 @@ public class GameService {
     @Transactional
     public Game createGame(Game game) {
         game.setState(GameState.SIGNUP);
+        try {
         Game saved = gameRepository.save(game);
         User owner = saved.getCreator();
         Player player = new Player();
@@ -42,6 +43,9 @@ public class GameService {
         player.setName(owner.getName());
         playerRepository.save(player);
         return saved;
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating game: " + e.getMessage());
+        }
     }
 
     @Transactional
@@ -99,6 +103,12 @@ public class GameService {
         var users = playerRepository.findByGame_UidAndUser_Uid(gameId, userId);
         if (users == null || users.isEmpty()) {
             throw new IllegalStateException("Player not found in game");
+        }
+        var game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new IllegalStateException("Game not found"));
+        var creator = game.getCreator();
+        if (creator.getUid() == userId) {
+            throw new IllegalStateException("Creator cannot leave the game");
         }
         Player player = users.get(0);
         playerRepository.delete(player);

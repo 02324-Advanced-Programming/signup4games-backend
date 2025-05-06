@@ -2,7 +2,6 @@ package com.example.accessing_data_rest.controllers;
 
 import com.example.accessing_data_rest.model.Game;
 import com.example.accessing_data_rest.model.Player;
-import com.example.accessing_data_rest.model.User;
 import com.example.accessing_data_rest.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -30,17 +29,17 @@ public class GameController {
     @PostMapping(path = "",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Game postGame(@RequestBody Game game) {
+    public Game postGame(@RequestBody Game game) throws RuntimeException {
         return gameService.createGame(game);
     }
 
     @PutMapping("/{gameId}/start")
-    public void startGame(@PathVariable Long gameId, @RequestParam Long userId) {
+    public void startGame(@PathVariable Long gameId, @RequestParam Long userId) throws RuntimeException {
         gameService.startGame(gameId, userId);
     }
 
     @DeleteMapping("/{gameId}")
-    public void deleteGame(@PathVariable Long gameId, @RequestParam Long userId) {
+    public void deleteGame(@PathVariable Long gameId, @RequestParam Long userId) throws RuntimeException {
         gameService.deleteGame(gameId, userId);
     }
 
@@ -53,7 +52,7 @@ public class GameController {
             @PathVariable long gameId,
             @RequestParam long userId,   // or, better, infer from security context
             @RequestParam String name
-    ) throws ChangeSetPersister.NotFoundException {
+    ) throws ChangeSetPersister.NotFoundException, IllegalStateException {
         return gameService.joinGame(gameId, userId, name);
     }
 
@@ -64,8 +63,8 @@ public class GameController {
     @DeleteMapping("/{gameId}/leave")
     public void leaveGame(
             @PathVariable long gameId,
-            @RequestBody User userPayload
-    ) {
-        gameService.leaveGame(gameId, userPayload.getUid());
+            @RequestParam long userId
+    ) throws IllegalStateException {
+        gameService.leaveGame(gameId, userId);
     }
 }
