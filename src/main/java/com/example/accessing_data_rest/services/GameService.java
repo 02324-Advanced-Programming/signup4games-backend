@@ -33,6 +33,10 @@ public class GameService {
 
     @Transactional
     public Game createGame(Game game) {
+        final int max_cap = 6;
+        if (game.getMaxPlayers() > max_cap) {
+            throw new IllegalArgumentException();
+        }
         game.setState(GameState.SIGNUP);
         try {
         Game saved = gameRepository.save(game);
