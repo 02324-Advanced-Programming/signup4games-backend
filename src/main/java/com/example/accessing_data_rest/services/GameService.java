@@ -79,7 +79,8 @@ public class GameService {
         if (game.getState() != GameState.SIGNUP) {
             throw new IllegalStateException("Cannot join a non-open game");
         }
-        if (game.getPlayers().size() >= game.getMaxPlayers()) {
+        var playerCount = (long) playerRepository.findByGame_Uid(gameId).size();
+        if (playerCount >= game.getMaxPlayers() || game.getPlayers().size() > game.getMaxPlayers()) {
             throw new IllegalStateException("Game is full");
         }
         boolean alreadyIn = game.getPlayers().stream()
