@@ -14,6 +14,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long uid;
 
+    @Column(unique = true)
     private String name;
 
     private boolean online = false;
